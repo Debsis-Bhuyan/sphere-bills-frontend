@@ -6,7 +6,8 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 
-export const APP_URL= "http://localhost:5000/api";
+export const APP_URL= "https://sphere-bills-backend.onrender.com/api";
+
 
 export const uploadFile = (setFileUrl, file) => {
   const storage = getStorage(app);
