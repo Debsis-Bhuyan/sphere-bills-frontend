@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "./Logo";
 import axios from "axios";
-import { uploadFile } from "../utils";
+import { APP_URL, uploadFile } from "../utils";
 import useStore from "../store";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../store/userSlice";
