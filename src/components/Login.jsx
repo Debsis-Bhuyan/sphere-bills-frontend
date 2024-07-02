@@ -14,7 +14,7 @@ const Signin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(email, password);
-    const url = "http://localhost:5000/api/user/login";
+    const url = `${APP_URL}/user/login`;
     try {
       const response = await axios.post(url, {
         email,

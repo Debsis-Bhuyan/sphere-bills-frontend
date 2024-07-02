@@ -3,6 +3,7 @@ import image from "../assets/Logo.png";
 import { states } from "../utils/state";
 import { useSelector } from "react-redux";
 import axios from 'axios'
+import { APP_URL } from "../utils";
 
 const EditProfile = () => {
   const user = useSelector((state) => state.user).user;
@@ -28,8 +29,8 @@ const EditProfile = () => {
       desc:formValues?.businessDetails ||"",
       phoneNo:formValues?.phoneNo ||""
     };
-     
-    const url = "http://localhost:5000/api/user/update-profile"
+  
+    const url = `${APP_URL}/user/update-profile`
     const token = user.token
     
     try {

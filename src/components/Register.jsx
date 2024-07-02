@@ -35,7 +35,7 @@ const SignUp = () => {
       return;
     }
     console.log(email, password, name, conformPassword,fileURL);
-    const url = "http://localhost:5000/api/user/register";
+    const url = `${APP_URL}/user/register`;
     try {
       const response = await axios.post(url, {
         fullName: name,

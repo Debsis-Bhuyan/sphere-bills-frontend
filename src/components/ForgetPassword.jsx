@@ -9,10 +9,9 @@ function ForgotPassword() {
     e.preventDefault();
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/user/forget-password",
-        { email }
-      );
+      const res = await axios.post(`${APP_URL}/user/forget-password`, {
+        email,
+      });
       console.log(res.data);
       if (res.data?.status === "failed") {
         setErr(res.data);
