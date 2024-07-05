@@ -39,7 +39,11 @@ const ProfilePage = () => {
       </h1>
       <div className="flex flex-wrap">
         <div className="w-1/2 pr-4   flex items-center justify-center   ">
-          <img src={user?.profileUrl || image} alt="Sample Image" className="w-full h-auto rounded-full" />
+          <img
+            src={user?.profileUrl || image}
+            alt="Sample Image"
+            style={{ borderRadius: "70%", width: "70%", height: "70%" }}
+          />
           <section className="text-center font-bold mt-4"></section>
         </div>
         <div className="w-1/2 pl-4">
@@ -195,8 +199,10 @@ const ProfilePage = () => {
               </div>
             </div>
             <div className="mt-2">
-              
-              <Link to={"/profile/edit"} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded">
+              <Link
+                to={"/profile/edit"}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded"
+              >
                 Edit Profile
               </Link>
             </div>

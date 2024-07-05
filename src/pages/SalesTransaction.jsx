@@ -77,7 +77,7 @@ const SalesTransaction = () => {
     const filterByDateRange = () => {
       const now = dayjs();
       let filteredOrders = salesData;
-       switch (dateRange) {
+      switch (dateRange) {
         case "today":
           filteredOrders = salesData.filter((order) =>
             dayjs(order.date).isSame(now, "day")

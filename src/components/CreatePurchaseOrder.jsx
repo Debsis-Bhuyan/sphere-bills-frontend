@@ -107,8 +107,8 @@ const CreatePurchaseOrder = () => {
     const obj = {
       party: partyName,
       number: orderNo,
-      date: new Date().toLocaleDateString(),
-      dueDate,
+      date: orderDate || new Date().toLocaleDateString(),
+      dueDate: dueDate || new Date().toLocaleDateString(),
       totalAmount: totalAmount,
       balance: totalAmount,
       type: paymentType,
@@ -229,9 +229,14 @@ const CreatePurchaseOrder = () => {
                 <label htmlFor="number" className="inline-block 1/3   mr-4">
                   Order Date:
                 </label>
-                <p className="w-2/3 px-4  border rounded-md">
-                  {new Date().toLocaleDateString()}
-                </p>
+                <input
+                  type="Date"
+                  id="number"
+                  className="w-2/3 px-4  border rounded-md"
+                  value={orderDate}
+                  onChange={(e) => setOrderDate(e.target.value)}
+                  required
+                />
               </div>
               <div className="mb-2  w-full flex justify-center">
                 <label htmlFor="number" className="inline-block 1/3   mr-7">

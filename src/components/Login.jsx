@@ -4,7 +4,7 @@ import Logo from "./Logo";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setUser } from "../store/userSlice";
-import { APP_URL } from "../utils";
+import { APP_URL, reg } from "../utils";
 
 const Signin = () => {
   const [email, setEmail] = useState("");
@@ -15,25 +15,30 @@ const Signin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(email, password);
+    if (!reg.test(email)) {
+      alert("Please provide a valid email.");
+      return;
+    }
     const url = `${APP_URL}/user/login`;
     try {
       const response = await axios.post(url, {
         email,
         password,
       });
-  
-      console.log("User registered successfully:", response.data);
+
+      console.log(response.data);
       setEmail("");
       setPassword("");
       if (response.data.success) {
         console.log(response.data.user);
         dispatch(setUser(response.data));
-
+        alert(response.data.message);
         setTimeout(() => {
           navigate("/dashboard");
         }, 1000);
+      } else {
+        alert(response.data.message);
       }
-      return response.data;
     } catch (error) {
       console.error("Error registering user:", error);
       throw error;
@@ -55,7 +60,7 @@ const Signin = () => {
               htmlFor="email"
               className="block text-sm font-medium text-gray-700"
             >
-              Email
+              Email <span style={{ color: "red" }}>*</span>
             </label>
             <input
               type="email"
@@ -67,6 +72,7 @@ const Signin = () => {
               }}
               className="mt-1 p-2 w-full border rounded-md focus:ring focus:ring-blue-300"
               placeholder="Enter your email"
+              required
             />
           </div>
           <div className="mb-4">
@@ -74,7 +80,7 @@ const Signin = () => {
               htmlFor="password"
               className="block text-sm font-medium text-gray-700"
             >
-              Password
+              Password <span style={{ color: "red" }}>*</span>
             </label>
             <input
               type="password"
@@ -86,6 +92,7 @@ const Signin = () => {
               }}
               className="mt-1 p-2 w-full border rounded-md focus:ring focus:ring-blue-300"
               placeholder="Enter your password"
+              required
             />
           </div>
 

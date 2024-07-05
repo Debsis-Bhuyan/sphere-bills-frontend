@@ -59,7 +59,7 @@ const AddItem = () => {
           </h2>
           <ol className="list-decimal list-inside">
             <li>Enter item name, quantity, and price.</li>
-            <li>click on the add item.</li>
+            <li>Click on the add item.</li>
             <li>
               If you want to search items you can search by the item name.
             </li>

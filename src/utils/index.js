@@ -6,17 +6,66 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 
-export const APP_URL= "https://sphere-bills-backend.onrender.com/api";
+// export const APP_URL = "https://sphere-bills-backend.onrender.com/api";
+export const APP_URL = "http://localhost:5001/api";
+
+export const reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
 
 
-export const uploadFile = (setFileUrl, file) => {
+export const validateName = (name) => {
+  // Basic validation: Check if the name is not empty
+  const isNotEmpty = name.trim() !== "";
+
+  // Additional validation: Check if the name contains only alphabetic characters and spaces
+  const isValidFormat = /^[a-zA-Z\s]+$/.test(name);
+  const stringWithoutSpaces = name.replace(/\s+/g, "");
+
+  if (stringWithoutSpaces.length < 3) {
+    return false;
+  }
+
+  return isNotEmpty && isValidFormat;
+};
+
+export const validatePassword = (password) => {
+  const errors = [];
+
+  // Check password length
+  if (password.length < 8) {
+    errors.push("Password must be at least 8 characters long");
+  }
+
+  // Check for uppercase letters
+  if (!/[A-Z]/.test(password)) {
+    errors.push("Password must contain at least one uppercase letter");
+  }
+
+  // Check for lowercase letters
+  if (!/[a-z]/.test(password)) {
+    errors.push("Password must contain at least one lowercase letter");
+  }
+
+  // Check for numbers
+  if (!/\d/.test(password)) {
+    errors.push("Password must contain at least one number");
+  }
+
+  // Check for special characters
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+    errors.push("Password must contain at least one special character");
+  }
+
+  return errors;
+};
+
+export const uploadFile =  (setFileUrl, file) => {
   const storage = getStorage(app);
 
   const name = new Date().getTime() + file.name;
   console.log();
-  const storageRef = ref(storage, name);
+  const storageRef =  ref(storage, name);
   const uploadTask = uploadBytesResumable(storageRef, file);
-  uploadTask.on(
+   uploadTask.on(
     "state_changed",
     (snapshot) => {
       const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
@@ -36,8 +85,8 @@ export const uploadFile = (setFileUrl, file) => {
     (error) => {
       console.log(error);
     },
-    () => {
-      getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
+     () => {
+       getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
         console.log("successfully uploaded");
         setFileUrl(downloadUrl);
       });
@@ -178,16 +227,15 @@ export const dateToSeconds = (dateString) => {
 };
 
 export const dataFetch = (sales) => {
-  console.log(sales)
   let timestampData = [];
   for (let i = 0; i < sales.length; i++) {
     const element = sales[i];
     if (i <= 12) {
       let timestamp;
       if (!element.date) {
-        timestamp = new Date().getTime()
+        timestamp = new Date().getTime();
       } else {
-        timestamp = new Date(element.date).getTime()
+        timestamp = new Date(element.date).getTime();
         // timestamp = dateToSeconds(element.date);
       }
       const da = [timestamp, parseInt(element.totalAmount || 0)];

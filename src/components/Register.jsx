@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "./Logo";
 import axios from "axios";
-import { APP_URL, uploadFile } from "../utils";
+import { APP_URL, reg, uploadFile, validateName, validatePassword } from "../utils";
 import useStore from "../store";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../store/userSlice";
@@ -12,53 +12,74 @@ const SignUp = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [conformPassword, setConformPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [validateError, setValidateError] = useState([]);
+  const [validateNameE, setValidateName] = useState("");
+
   const [name, setName] = useState("");
   const [file, setFile] = useState(null);
   const [fileURL, setFileUrl] = useState("");
   const [err, setErr] = useState("");
+  const [responseErr, setResponseErr] = useState({});
 
   useEffect(() => {
     file && uploadFile(setFileUrl, file);
   }, [file]);
   useEffect(() => {
-    setTimeout(() => {
+    if (password !== confirmPassword) {
+      setErr("Password and Conform Password are not matched");
+      return;
+    } else {
       setErr("");
-    }, 3000);
-  }, [err]);
+    }
+  }, [confirmPassword]);
+
+  useEffect(() => {
+    const err = validatePassword(password);
+    const nameErr = validateName(name);
+    if (!nameErr) {
+      setValidateName("Please provide atleast 3 letter");
+    }
+    else{
+      setValidateName("");
+    }
+    setValidateError(err);
+  }, [password, name]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(password, conformPassword);
-    if (password !== conformPassword) {
-      setErr("Password and Conform Password are not matched");
-      return;
-    }
-    console.log(email, password, name, conformPassword,fileURL);
-    const url = `${APP_URL}/user/register`;
-    try {
-      const response = await axios.post(url, {
-        fullName: name,
-        email,
-        password,
-        profileUrl: fileURL,
-      });
-      console.log("User registered successfully:", response.data);
-      setFile(null);
-      alert(response.data.message)
-      if (response.data.success) {
-        console.log(response.data.user);
-        dispatch(setUser(response.data));
 
-        setTimeout(() => {
-          navigate("/dashboard");
-        }, 1000);
-      }
-      return response.data; // Return any data you want to use in your component
+    if(!reg.test(email)){
+      alert("Please provide a valid email.");
+      return
+    }
+
+    const url = `${APP_URL}/user/register`;
+
+    try {
+      setTimeout(async () => {
+        const response = await axios.post(url, {
+          fullName: name,
+          email,
+          password,
+          profileUrl: fileURL,
+        });
+        setFile(null);
+        if (response.data.success) {
+          alert(response.data.message);
+          dispatch(setUser(response.data));
+
+          setTimeout(() => {
+            navigate("/dashboard");
+          }, 100);
+        } else {
+          setResponseErr(response.data.message);
+          alert(response.data.message);
+        }
+      }, 1000);
     } catch (error) {
-      // Handle error, e.g., show an error message to the user
-      console.error("Error registering user:", error);
-      throw error; // Throw the error for further handling in the component
+      console.error("Error registering user:", error.message);
+      throw error;
     }
   };
 
@@ -77,7 +98,7 @@ const SignUp = () => {
               htmlFor="name"
               className="block text-sm font-medium text-gray-700"
             >
-              Name
+              Full Name <span style={{ color: "red" }}>*</span>
             </label>
             <input
               type="text"
@@ -88,16 +109,21 @@ const SignUp = () => {
                 setName(e.target.value);
               }}
               className="mt-1 p-2 w-full border rounded-md focus:ring focus:ring-blue-300"
-              placeholder="Enter your Name"
+              placeholder="Enter your Full Name"
               required
             />
+          {validateNameE && (
+            <ul>
+              <li style={{ color: "red", fontSize: "10px " }}>{validateNameE}</li>
+            </ul>
+          )}
           </div>
           <div className="mb-4">
             <label
               htmlFor="email"
               className="block text-sm font-medium text-gray-700"
             >
-              Email
+              Email <span style={{ color: "red" }}>*</span>
             </label>
             <input
               type="email"
@@ -117,7 +143,7 @@ const SignUp = () => {
               htmlFor="password"
               className="block text-sm font-medium text-gray-700"
             >
-              Password
+              Password <span style={{ color: "red" }}>*</span>
             </label>
             <input
               type="password"
@@ -132,20 +158,30 @@ const SignUp = () => {
               required
             />
           </div>
-          <div className="mb-4">
+
+          <ul>
+            {validateError &&
+              validateError.map((error, index) => (
+                <li key={index} style={{ color: "red", fontSize: "10px " }}>
+                  {error}
+                </li>
+              ))}
+          </ul>
+
+          <div className="mb-4 mt-2">
             <label
-              htmlFor="conformPassword"
+              htmlFor="confirmPassword"
               className="block text-sm font-medium text-gray-700"
             >
-              Conform Password
+              Confirm Password <span style={{ color: "red" }}>*</span>
             </label>
             <input
               type="password"
-              id="conformPassword"
-              name="conformPassword"
-              value={conformPassword}
+              id="confirmPassword"
+              name="confirmPassword"
+              value={confirmPassword}
               onChange={(e) => {
-                setConformPassword(e.target.value);
+                setConfirmPassword(e.target.value);
               }}
               className="mt-1 p-2 w-full border rounded-md focus:ring focus:ring-blue-300"
               placeholder="Conform your password"
@@ -158,7 +194,7 @@ const SignUp = () => {
               htmlFor="file"
               className="block text-sm font-medium text-gray-700"
             >
-              Upload Business Logo
+              Upload Business Logo <span style={{ color: "red" }}>*</span>
             </label>
             <input
               type="file"

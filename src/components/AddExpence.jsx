@@ -24,6 +24,7 @@ const CreateExpence = () => {
   const [toatalquantity, setTotalQuantity] = useState(0);
   const [round, setRound] = useState(false);
   const [items, setItems] = useState(expenceItem);
+  const [orderDate, setOrderDate] = useState("");
   const [purchaserName, setPurchaserName] = useState("");
   const [purchaseCat, setPurchaseCat] = useState("");
   const [formData, setFormData] = useState({
@@ -67,23 +68,22 @@ const CreateExpence = () => {
     const obj = {
       party: purchaserName,
       number: orderNo,
-      date: new Date().toLocaleDateString(),
+      date: orderDate || new Date().toLocaleDateString(),
       purchaseCat,
       totalAmount: totalAmount,
       toatalquantity,
     };
     setPartyData(obj);
-  }, [purchaseCat, purchaserName, totalAmount, toatalquantity]);
-  
-  const taxData = [28, 18, 12, 16];
+  }, [purchaseCat, purchaserName, totalAmount, orderDate, toatalquantity]);
 
+  const taxData = [28, 18, 12, 16];
 
   const saveExpence = (e) => {
     e.preventDefault();
     const obj = {
       party: purchaserName,
       number: orderNo,
-      date: new Date().toLocaleDateString(),
+      date: orderDate || new Date().toLocaleDateString(),
       purchaseCat,
       totalAmount: totalAmount,
       toatalquantity,
@@ -200,9 +200,14 @@ const CreateExpence = () => {
                 <label htmlFor="number" className="inline-block 1/3 mb-2 mr-4">
                   Date:
                 </label>
-                <p className="w-2/3 px-4  border rounded-md">
-                  {new Date().toLocaleDateString()}
-                </p>
+                <input
+                  type="Date"
+                  id="number"
+                  className="w-2/3 px-4  border rounded-md"
+                  value={orderDate}
+                  onChange={(e) => setOrderDate(e.target.value)}
+                  required
+                />
               </div>
             </div>
           </div>

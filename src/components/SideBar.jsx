@@ -52,7 +52,7 @@ const SideBar = () => {
               to="/items"
               className="block text-xl  px-4  p-1 rounded hover:bg-blue-500"
             >
-              items
+              Items
             </Link>
             <Link
               to="/sales"

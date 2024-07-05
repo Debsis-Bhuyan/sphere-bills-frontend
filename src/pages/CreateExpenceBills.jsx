@@ -46,7 +46,7 @@ console.log(data)
         </div>
         <div className="text-gray-700">
           <p className="font-semibold">Order Details</p>
-          <p>Date: {new Date().toLocaleDateString()}</p>
+          <p>Date: {partyData?.date || new Date().toLocaleDateString()}</p>
         </div>
       </div>
       <div className="py-2 px-2 w-full">

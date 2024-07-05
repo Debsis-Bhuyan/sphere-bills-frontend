@@ -42,7 +42,7 @@ const Layout = () => {
   const location = useLocation();
 
   return user?.user?.token ? (
-    <div className="w-full h-screen p-0 m-0 ">
+    <div className="w-full h-full p-0 m-0 ">
       <Navbar />
       <div className="w-full h-full flex border-t ">
         <div className="hidden lg:flex ">
@@ -64,15 +64,12 @@ function App() {
         <Route element={<Layout />}>
           <Route index path="/" element={<Navigate to={"/dashboard"} />} />
           <Route path="/dashboard" element={<Dashboard />} />
-
           <Route path="/sales" element={<Sales />} />
           <Route path="/sales-data" element={<SalesTransaction />} />
           <Route path="/create-sales" element={<SalesOrder />} />
-
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/profile/edit" element={<EditProfile />} />
           <Route path="/feedback" element={<Contact />} />
-
           <Route path="/items" element={<ItemsPage />} />
           <Route path="/expence" element={<ExpencePage />} />
           <Route path="/expence-data" element={<ExpenceData />} />

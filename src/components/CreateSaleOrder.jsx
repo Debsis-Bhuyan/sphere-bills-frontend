@@ -15,7 +15,6 @@ const CreateSaleOrder = () => {
   const salesItem = useSelector((state) => state.salesItem).salesItem;
   const salesData = useSelector((state) => state.sales).sales;
 
-  console.log(salesData);
   const transctionData = useSelector((state) => state.transaction).transaction;
   const dispatch = useDispatch();
 
@@ -115,8 +114,8 @@ const CreateSaleOrder = () => {
     const obj = {
       party: partyName,
       number: orderNo,
-      date: new Date().toLocaleDateString(),
-      dueDate,
+      date: orderDate || new Date().toLocaleDateString(),
+      dueDate:dueDate || new Date().toLocaleDateString(),
       totalAmount: totalAmount,
       balance: totalAmount,
       type: paymentType,
@@ -147,8 +146,8 @@ const CreateSaleOrder = () => {
     const obj = {
       party: partyName,
       number: orderNo,
-      date: new Date().toLocaleDateString(),
-      dueDate,
+      date: orderDate || new Date().toLocaleDateString(),
+      dueDate:dueDate || new Date().toLocaleDateString(),
       totalAmount: totalAmount,
       balance: totalAmount,
       type: paymentType,
@@ -171,7 +170,7 @@ const CreateSaleOrder = () => {
     setDueDate("");
     // setBalance(0);
     setPaymentType("Sale");
-    setOrderNo(Number(transctionData[transctionData.length - 1].number) + 1);
+    setOrderNo(Number(transctionData[transctionData.length - 1].number) + 1 || 1);
     setPhoneNo("");
   };
   return (
@@ -251,17 +250,17 @@ const CreateSaleOrder = () => {
                 <label htmlFor="number" className="inline-block 1/3   mr-4">
                   Order Date:
                 </label>
-                {/* <input
+                <input
                   type="Date"
                   id="number"
                   className="w-2/3 px-4  border rounded-md"
                   value={orderDate}
                   onChange={(e) => setOrderDate(e.target.value)}
                   required
-                /> */}
-                <p className="w-2/3 px-4  border rounded-md mr-0">
+                />
+                {/* <p className="w-2/3 px-4  border rounded-md mr-0">
                   {new Date().toLocaleDateString()}
-                </p>
+                </p> */}
               </div>
               <div className="mb-2  w-full flex justify-center">
                 <label htmlFor="number" className="inline-block 1/3   mr-7">

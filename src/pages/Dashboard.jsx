@@ -1,167 +1,243 @@
-// src/Dashboard.js
-import React, { useEffect, useState } from "react";
-import { Line } from "react-chartjs-2";
-import "chart.js/auto";
-import { useSelector } from "react-redux";
+import React from "react";
+import ReactApexChart from "react-apexcharts";
+import Chart from "react-apexcharts";
+import { connect, useSelector } from "react-redux";
+import { dataFetch, dateToSeconds, getHalfYearDate } from "../utils";
+import NoDataAvailable from "../assets/image.png";
 
-function Dashboard() {
-  const allSales = useSelector((state) => state.sales).sales;
-  const allExpence = useSelector((state) => state.expence).expence;
-  const allPurchase = useSelector((state) => state.transaction).transaction;
-  const [saleAmount, setSaleAmount] = useState(0);
-  const [expenceAmount, setExpenceAmount] = useState(0);
-  const [monthSales, setMonthSales] = useState([]);
-  const [monthExpence, setMonthExpence] = useState([]);
+class ApexChart extends React.Component {
+  constructor(props) {
+    super(props);
+    // const sales = this.props.sales;
+    // const year = "2022";
+    // const month = "04";
+    // const date = "25";
+    // const c= new Date(`${year}-${month}-${date}`).getTime();
+    // const d = new Date("2022 Mar 25").getTime();
 
-  const saleFun = () => {
-    const monthlyTotal = [];
-
-    allSales.forEach((transaction) => {
-      const month = Number(transaction.date.split("-")[1]);
-      if (!monthlyTotal[month]) {
-        monthlyTotal[month] = Number(transaction.totalAmount);
-      } else {
-        monthlyTotal[month] += Number(transaction.totalAmount);
-      }
-    });
-    let arr = [];
-    for (let i = 0; i < 12; i++) {
-      if (monthlyTotal[i + 1]) {
-        arr[i] = monthlyTotal[i + 1];
-      } else {
-        arr[i] = 0;
-      }
-    }
-
-    setMonthSales(arr);
-  };
-  const expenceFun = () => {
-    const monthlyTotal = [];
-
-    allExpence.forEach((transaction) => {
-      const month = Number(transaction.date.split("/")[0]);
-      if (!monthlyTotal[month]) {
-        monthlyTotal[month] = Number(transaction.totalAmount);
-      } else {
-        monthlyTotal[month] += Number(transaction.totalAmount);
-      }
-    });
-    let arr = [];
-    for (let i = 0; i < 12; i++) {
-      if (monthlyTotal[i + 1]) {
-        arr[i] = monthlyTotal[i + 1];
-      } else {
-        arr[i] = 0;
-      }
-    }
-
-    setMonthExpence(arr);
-  };
-
-  useEffect(() => {
-    let totalSales = 0;
-    allSales.forEach((element) => {
-      const totalAmount = Number(element.totalAmount);
-      totalSales += totalAmount;
-    });
-    setSaleAmount(totalSales);
-    let totalExpence = 0;
-    allExpence.forEach((element) => {
-      const totalAmount = Number(element.totalAmount);
-      totalExpence += totalAmount;
-    });
-    setExpenceAmount(totalExpence);
-    saleFun();
-    expenceFun();
-  }, []);
-  return (
-    <div className="bg-gray-100 min-h-screen p-4">
-      <div className="container mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2   gap-4">
-          <StatCard
-            title="Total Sale"
-            amount={saleAmount}
-            monthData={monthSales}
-          />
-          <StatCard
-            title="Total Expenses"
-            amount={expenceAmount}
-            monthData={monthExpence}
-          />
-          <Card title="You'll Receive" amount="₹ 3,70,874.00" />
-          <Card title="You'll Pay" amount="₹ 1,62,497.00" />
-          <Card title="Purchase" amount="₹ 00.00" />
-        </div>
-        {/* <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <Card title="Stock Inventory" amount="₹ 51,39,903.90" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card title="Cash In Hand" amount="₹ 10,53,189.00" />
-            <Card title="Bank Accounts" amount="₹ 00.00" />
-            <Card title="Loan Accounts" amount="₹ 00.00" />
-          </div>
-        </div> */}
-      </div>
-    </div>
-  );
-}
-
-function Card({ title, amount }) {
-  return (
-    <div className="bg-white p-4 rounded shadow">
-      <h3 className="text-lg font-bold">{title}</h3>
-      <p className="text-2xl">{amount}</p>
-    </div>
-  );
-}
-
-function StatCard({ title, amount, monthData }) {
-  const data = {
-    labels: [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ],
-    datasets: [
-      {
-        label: "Sales",
-        data: [...monthData],
-        fill: false,
-        backgroundColor: "rgb(75, 192, 192)",
-        borderColor: "rgba(75, 192, 192, 0.2)",
+    this.state = {
+      series: [
+        {
+          data: this.props.sales,
+        },
+      ],
+      options: {
+        chart: {
+          id: "area-datetime",
+          type: "area",
+          height: 350,
+          zoom: {
+            autoScaleYaxis: true,
+          },
+        },
+        annotations: {
+          yaxis: [
+            {
+              y: 30,
+              borderColor: "#999",
+              label: {
+                show: true,
+                text: "Support",
+                style: {
+                  color: "#fff",
+                  background: "#00E396",
+                },
+              },
+            },
+          ],
+          xaxis: [
+            {
+              x: new Date("01 Jan 2024").getTime(),
+              borderColor: "#999",
+              yAxisIndex: 0,
+              label: {
+                show: true,
+                text: "Rally",
+                style: {
+                  color: "#fff",
+                  background: "#775DD0",
+                },
+              },
+            },
+          ],
+        },
+        dataLabels: {
+          enabled: false,
+        },
+        markers: {
+          size: 0,
+          style: "hollow",
+        },
+        xaxis: {
+          type: "datetime",
+          min: new Date("01 Jan 2024").getTime(),
+          tickAmount: 6,
+        },
+        tooltip: {
+          x: {
+            format: "dd MMM yyyy",
+          },
+        },
+        fill: {
+          type: "gradient",
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.7,
+            opacityTo: 0.9,
+            stops: [0, 100],
+          },
+        },
       },
-    ],
-  };
 
-  return (
-    <div className="bg-white p-4 rounded shadow">
-      <div className="flex justify-between items-center">
-        <div>
-          <h3 className="text-lg font-bold">{title}</h3>
-          <p className="text-2xl">{amount}</p>
-        </div>
-        <div>
-          <div className="bg-green-100 p-1 rounded">
-            <p className="text-green-600 text-sm">+0%</p>
+      selection: "one_year",
+    };
+  }
+
+  updateData(timeline) {
+    this.setState({
+      selection: timeline,
+    });
+    const currentDate = new Date();
+    let previousMonth = currentDate.getMonth();
+    let previousYear = currentDate.getFullYear();
+
+    switch (timeline) {
+      case "one_month":
+        ApexCharts.exec(
+          "area-datetime",
+          "zoomX",
+          new Date("02 May 2024").getTime(),
+
+          new Date(currentDate).getTime()
+        );
+        break;
+      case "six_months":
+        ApexCharts.exec(
+          "area-datetime",
+          "zoomX",
+          new Date("01 Jan 2024").getTime(),
+          new Date(currentDate).getTime()
+        );
+        break;
+      case "one_year":
+        ApexCharts.exec(
+          "area-datetime",
+          "zoomX",
+          new Date(
+            currentDate.getFullYear() - 1,
+            currentDate.getMonth(),
+            currentDate.getDate()
+          ).getTime(),
+
+          // new Date("27 Feb 2012").getTime(),
+          // new Date("27 Feb 2013").getTime(),
+          new Date(currentDate).getTime()
+          // new Date("27 Feb 2012").getTime(),
+          // new Date(currentDate.getFullYear(),currentDate.getMonth(),currentDate.getDate(), ).getTime()
+        );
+        break;
+      case "ytd":
+        ApexCharts.exec(
+          "area-datetime",
+          "zoomX",
+          new Date(currentDate.getFullYear(), 0, 1).getTime(),
+
+          new Date(currentDate).getTime()
+        );
+        break;
+      case "all":
+        ApexCharts.exec(
+          "area-datetime",
+          "zoomX",
+          new Date("01 Jan 2024").getTime(),
+          new Date(currentDate).getTime()
+        );
+        break;
+      default:
+    }
+  }
+
+  render() {
+    return (
+      <div className="w-full ">
+        {this.state.series[0] ? (
+          <div className="w-full">
+            <div id="chart">
+              <div className="toolbar flex justify-center items-center gap-10">
+                <button
+                  id="one_month"
+                  onClick={() => this.updateData("one_month")}
+                  className={
+                    this.state.selection === "one_month" ? "active" : ""
+                  }
+                >
+                  1M
+                </button>
+
+                <button
+                  id="six_months"
+                  onClick={() => this.updateData("six_months")}
+                  className={
+                    this.state.selection === "six_months" ? "active" : ""
+                  }
+                >
+                  6M
+                </button>
+
+                <button
+                  id="one_year"
+                  onClick={() => this.updateData("one_year")}
+                  className={
+                    this.state.selection === "one_year" ? "active" : ""
+                  }
+                >
+                  1Y
+                </button>
+
+                <button
+                  id="ytd"
+                  onClick={() => this.updateData("ytd")}
+                  className={this.state.selection === "ytd" ? "active" : ""}
+                >
+                  YTD
+                </button>
+
+                <button
+                  id="all"
+                  onClick={() => this.updateData("all")}
+                  className={this.state.selection === "all" ? "active" : ""}
+                >
+                  ALL
+                </button>
+              </div>
+
+              <div id="chart-timeline">
+                <ReactApexChart
+                  options={this.state.options}
+                  series={this.state.series}
+                  type="area"
+                  height={350}
+                />
+              </div>
+            </div>
+            <div id="html-dist"></div>
           </div>
-        </div>
+        ) : (
+          <div className="flex w-full items-center justify-center py-20">
+            <img src={NoDataAvailable} alt="No Data Avilavble to show" />
+          </div>
+        )}
       </div>
-      <div className="mt-2">
-        <p className="text-gray-600 text-sm">This Month Growth</p>
-        <div className="h-24 bg-gray-200 rounded mt-2">
-          <Line data={data} />
-        </div>
-      </div>
-    </div>
-  );
+    );
+  }
 }
 
-export default Dashboard;
+const mapStateToProps = (state) => {
+  const sales = dataFetch(useSelector((state) => state.sales).sales);
+
+  return {
+    sales: sales,
+  };
+};
+
+export default connect(mapStateToProps)(ApexChart);
