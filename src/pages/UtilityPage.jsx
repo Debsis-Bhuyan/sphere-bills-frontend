@@ -3,8 +3,8 @@ import React, { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import "chart.js/auto";
 import { useSelector } from "react-redux";
+import { label } from "../utils/state";
 
-import React from 'react'
 
 const UtilityPage = () => {
 
@@ -119,20 +119,7 @@ function Card({ title, amount }) {
 
 function StatCard({ title, amount, monthData }) {
   const data = {
-    labels: [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ],
+    labels: label,
     datasets: [
       {
         label: "Sales",

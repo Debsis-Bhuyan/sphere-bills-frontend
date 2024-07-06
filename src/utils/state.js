@@ -286,8 +286,22 @@ export const state = [
     ],
   },
 ];
-export const taxData = 
-[ 0, 5, 12, 18, 28]
+export const taxData = [ 0, 5, 12, 18, 28]
+
+export const label= [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 
 export const unitData = [
   "Numbers (n)",
