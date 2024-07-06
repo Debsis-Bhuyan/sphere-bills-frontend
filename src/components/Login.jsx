@@ -29,16 +29,16 @@ const Signin = () => {
       console.log(response.data);
       setEmail("");
       setPassword("");
+      alert(response.data.message);
+
       if (response.data.success) {
         console.log(response.data.user);
         dispatch(setUser(response.data));
-        alert(response.data.message);
+        
         setTimeout(() => {
           navigate("/dashboard");
-        }, 1000);
-      } else {
-        alert(response.data.message);
-      }
+        }, 100);
+      } 
     } catch (error) {
       console.error("Error registering user:", error);
       throw error;
