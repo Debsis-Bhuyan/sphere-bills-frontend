@@ -1,29 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import image from "../assets/Logo.png";
 import { states, state } from "../utils/state";
 import { FaEdit } from "react-icons/fa";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { APP_URL } from "../utils";
 
 const ProfilePage = () => {
-  const user = useSelector((state) => state.user).user.user;
-  const [formValues, setFormValues] = useState(user);
-  const [userData, setUserData] = useState(user || null);
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues({ ...formValues, [name]: value });
-  };
+  const { userId } = useParams();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(formValues);
-  };
-  // List of states
+  const [userData, setUserData] = useState(null);
 
-  // console.log(state.st)
-  // state.forEach(sta=>{
-  //   console.log(sta.districts)
-  // })
+  const getProfileData = async () => {
+    try {
+      const response = await axios.get(`${APP_URL}/user/get-profile/` + userId);
+      setUserData(response.data);
+      return response.data;
+    } catch (error) {
+      console.log("error in fetching data", error);
+      return null;
+    }
+  };
+  useEffect(() => {
+    getProfileData();
+  }, []);
+
   return (
     <div className="w-full justify-between shadow-md p-4 rounded-lg bg-white">
       <h1 className="text-4xl font-bold mb-2 relative">
@@ -40,7 +42,7 @@ const ProfilePage = () => {
       <div className="flex flex-wrap">
         <div className="w-1/2 pr-4   flex items-center justify-center   ">
           <img
-            src={user?.profileUrl || image}
+            src={userData?.profileUrl || image}
             alt="Sample Image"
             style={{ borderRadius: "70%", width: "70%", height: "70%" }}
           />
@@ -60,9 +62,10 @@ const ProfilePage = () => {
                   type="text"
                   id="businessName"
                   name="businessName"
-                  value={user?.fullName || ""}
+                  value={userData?.fullName || ""}
                   // onChange={handleInputChange}
                   className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded-lg py-3 px-4 leading-tight focus:outline-none focus:bg-white"
+                  placeholder="Please Edit your profile"
                   readOnly
                 />
               </div>
@@ -77,9 +80,8 @@ const ProfilePage = () => {
                   type="text"
                   id="gstin"
                   name="gstin"
-                  value={user?.gstin || ""}
-                  placeholder="Edit your profile"
-                  // onChange={handleInputChange}
+                  value={userData?.gstin || ""}
+                  placeholder="Please Edit your profile"                  // onChange={handleInputChange}
                   className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded-lg py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                   readOnly
                 />
@@ -95,11 +97,10 @@ const ProfilePage = () => {
                   type="text"
                   id="phoneNo"
                   name="phoneNo"
-                  value={formValues.phoneNo || ""}
+                  value={userData?.phoneNo || ""}
                   // onChange={handleInputChange}
                   className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded-lg py-3 px-4 leading-tight focus:outline-none focus:bg-white"
-                  placeholder="Edit your Profile"
-                  readOnly
+                  placeholder="Please Edit your profile"                  readOnly
                 />
               </div>
               <div className="w-full md:w-1/2 px-3 mb-2">
@@ -113,10 +114,9 @@ const ProfilePage = () => {
                   type="text"
                   id="email"
                   name="email"
-                  value={user?.email || ""}
+                  value={userData?.email || ""}
                   // onChange={handleInputChange}
                   className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded-lg py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                  placeholder="xyz@gmail.com"
                   readOnly
                 />
               </div>
@@ -131,20 +131,14 @@ const ProfilePage = () => {
                 <input
                   id="state"
                   name="state"
-                  value={user?.state || ""}
+                  value={userData?.state || ""}
                   // onChange={handleInputChange}
                   className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded-lg py-3 px-4 leading-tight focus:outline-none focus:bg-white"
-                  placeholder="Edit your profile"
                   type="text"
+                   placeholder="Please Edit your profile"
                   readOnly
                 />
-                {/* <option value="">Select State</option>
-                  {states.map((state) => (
-                    <option key={state} value={state}>
-                      {state}
-                    </option>
-                  ))} */}
-                {/* </select> */}
+                
               </div>
               <div className="w-full md:w-1/2 px-3 mb-2">
                 <label
@@ -157,9 +151,9 @@ const ProfilePage = () => {
                   type="text"
                   id="businessAddress"
                   name="businessAddress"
-                  value={user?.businessAddress || ""}
-                  // onChange={handleInputChange}
+                  value={userData?.businessAddress || ""}
                   className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded-lg py-3 px-4 leading-tight focus:outline-none focus:bg-white"
+                   placeholder="Please Edit your profile"
                   readOnly
                 />
               </div>
@@ -174,9 +168,10 @@ const ProfilePage = () => {
                   type="text"
                   id="pincode"
                   name="pincode"
-                  value={user?.pincode || ""}
+                  value={userData?.pincode || ""}
                   // onChange={handleInputChange}
                   className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded-lg py-3 px-4 leading-tight focus:outline-none focus:bg-white"
+                   placeholder="Please Edit your profile"
                   readOnly
                 />
               </div>
@@ -190,8 +185,7 @@ const ProfilePage = () => {
                 <textarea
                   id="businessDetails"
                   name="businessDetails"
-                  value={user?.desc || ""}
-                  // onChange={handleInputChange}
+                  value={userData?.desc || ""}
                   className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded-lg py-3 px-4 leading-tight focus:outline-none focus:bg-white"
                   rows="5"
                   readOnly
@@ -200,7 +194,7 @@ const ProfilePage = () => {
             </div>
             <div className="mt-2">
               <Link
-                to={"/profile/edit"}
+                to={"/profile/edit/"+userId}
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded"
               >
                 Edit Profile

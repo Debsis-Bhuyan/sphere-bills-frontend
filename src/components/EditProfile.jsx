@@ -1,22 +1,63 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import image from "../assets/Logo.png";
 import { states } from "../utils/state";
 import { useSelector } from "react-redux";
-import axios from 'axios'
+import axios from "axios";
 import { APP_URL } from "../utils";
+import { useParams } from "react-router-dom";
 
 const EditProfile = () => {
   const user = useSelector((state) => state.user).user;
- 
+  const [userData, setUserData] = useState(null);
+
   const [formValues, setFormValues] = useState(user.user || {});
-   
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
+    if (name === "phoneNo") {
+      if (!/^\d*$/.test(value) || value.length > 10) {
+        setPhoneError("Please enter a valid phone number.");
+      } else {
+        setPhoneError("");
+      }
+    }
+
+    // Pincode validation
+    if (name === "pincode") {
+      if (!/^\d*$/.test(value) || value.length > 6) {
+        setPinError("Please enter a valid pincode.");
+      } else {
+        setPinError("");
+      }
+    }
+
     setFormValues({ ...formValues, [name]: value });
   };
+  const { userId } = useParams();
 
-  const handleSubmit = async(e) => {
+  const getProfileData = async () => {
+    try {
+      const response = await axios.get(`${APP_URL}/user/get-profile/` + userId);
+      console.log(response.data);
+      setUserData(response.data);
+    } catch (error) {
+      console.log("error in fetching data", error);
+      return null;
+    }
+  };
+  useEffect(() => {
+    getProfileData();
+  }, []);
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Check if phone number is exactly 10 digits
+    if (formValues?.phoneNo.length !== 10) {
+      setPhoneError("Phone number must be exactly 10 digits.");
+      return;
+    }
+
     const obj = {
       userId: user?.user?._id,
       fullName: user?.user?.fullName,
@@ -26,26 +67,22 @@ const EditProfile = () => {
       gstin: formValues?.gstin || "",
       state: formValues?.state || "",
       businessAddress: formValues?.businessAddress || "",
-      desc:formValues?.businessDetails ||"",
-      phoneNo:formValues?.phoneNo ||""
+      desc: formValues?.businessDetails || "",
+      phoneNo: formValues?.phoneNo || "",
     };
   
-    const url = `${APP_URL}/user/update-profile`
-    const token = user.token
-    
-    try {
-      const response = await axios.put(url,
-        obj,
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
+    const url = `${APP_URL}/user/update-profile`;
+    const token = user.token;
 
-      )
-      console.log(response.data)
+    try {
+      const response = await axios.put(url, obj, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      console.log(response.data);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
 
@@ -62,12 +99,12 @@ const EditProfile = () => {
           Profile Page
         </span>
       </h1>
-      <div className="flex flex-wrap items-center justify-center">
-        <div className="w-1/2 pr-4  flex items-center justify-center ">
+      <div className="flex flex-wrap  ">
+        <div className="w-1/2 pr-4   flex items-center justify-center   ">
           <img
             src={user?.user?.profileUrl}
             alt="Sample Image"
-            className="w-full h-auto rounded-full"
+            style={{ borderRadius: "70%", width: "70%", height: "70%" }}
           />
         </div>
         <div className="w-1/2 pl-4">
@@ -100,7 +137,9 @@ const EditProfile = () => {
                   type="text"
                   id="businessName"
                   name="businessName"
-                  value={formValues.businessName || ""}
+                  value={
+                    formValues.businessName || userData?.businessName || ""
+                  }
                   onChange={handleInputChange}
                   className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded-lg py-3 px-4 leading-tight focus:outline-none focus:bg-white"
                 />
@@ -220,7 +259,7 @@ const EditProfile = () => {
                 <textarea
                   id="businessDetails"
                   name="businessDetails"
-                  value={user?.user?.desc || formValues.businessDetails }
+                  value={user?.user?.desc || formValues.businessDetails}
                   onChange={handleInputChange}
                   className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded-lg py-3 px-4 leading-tight focus:outline-none focus:bg-white"
                   rows="5"

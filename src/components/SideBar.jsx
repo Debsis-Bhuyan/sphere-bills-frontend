@@ -27,7 +27,7 @@ const SideBar = () => {
           </div>
           <nav className="flex-1  p-4 overflow-y-auto">
             <div className="flex gap-2 p-1 px-4 items-center mt-2">
-              <Link to="/profile" className="flex text-xl gap-2">
+              <Link to={`/profile/${user?.user._id}`} className="flex text-xl gap-2">
                 {/* {! user?.user.image ? ( */}
                 <img
                   src={user?.user.profileUrl || profile}
@@ -98,12 +98,12 @@ const SideBar = () => {
             >
               Settings
             </Link>
-            <Link
+            {/* <Link
               to="/utilitis"
               className="block p-1 text-xl px-4  rounded hover:bg-blue-500"
             >
               Utilities
-            </Link>
+            </Link> */}
 
             <Link
               to="/feedback"

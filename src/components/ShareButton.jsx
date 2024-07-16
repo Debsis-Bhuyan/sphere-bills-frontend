@@ -1,13 +1,15 @@
 import axios from "axios";
 import { useState } from "react";
+import { APP_URL } from "../utils";
 
 const ShareButton = ({ isOpen, setIsOpen, data }) => {
   const [email, setEmail] = useState("");
   console.log(data);
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     console.log(email);
-    const url = "http://localhost:5000/api/utils/generate-invoice-pdf";
+    const url = `${APP_URL}/utils/generate-invoice-pdf`;
     try {
       const response = await axios.post(url,{ data,email});
       console.log(response.data);
